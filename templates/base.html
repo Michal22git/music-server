@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Music streamer</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <h1><a href="{% url 'app:home' %}">Music app</a></h1>
+            <ul>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'app:addmusic' %}">Add music</a></li>
+                    <li><a href="{% url 'app:player' %}">Listen</a></li>
+                    <li><a href="{% url 'users:profile' %}">My profile</a></li>
+                    <li><a href="{% url 'users:logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'users:login' %}">Login</a></li>
+                    <li><a href="{% url 'users:register' %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

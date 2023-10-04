@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Twoje piosenki</h2>
+<ul>
+    {% for element in element_list %}
+    <li>
+        {{ element.title }}
+        <form method="POST" action="{% url 'app:delete' element.id %}">
+           {% csrf_token %}<input type="submit" value="Delete">
+        </form>
+        <audio controls muted>
+            <source src="{{ element.mp3_file.url }}" type="audio/mpeg">
+            Twoja przeglądarka nie obsługuje odtwarzacza audio.
+        </audio>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock content %}
