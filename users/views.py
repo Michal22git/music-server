@@ -15,6 +15,12 @@ class CustomLoginView(SuccessMessageMixin, LoginView):
         response = super().form_valid(form)
         messages.success(self.request, f"Welcome back {self.request.user.username}!")
         return response
+    
+    def get_form(form):
+        form = super().get_form(form_class=None)
+        form.fields['username'].widget.attrs.update({'class': 'form-input','placeholder':'Username'})
+        form.fields['password'].widget.attrs.update({'class': 'form-input','placeholder':'Password'})
+        return form
 
 
 class CustomLogoutView(SuccessMessageMixin, LogoutView):
