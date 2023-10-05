@@ -1,10 +1,8 @@
-import eyed3
 import os
+import eyed3
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.core.files import File
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView
@@ -17,7 +15,7 @@ class HomeView(TemplateView):
     template_name = 'app/home.html'
 
 
-class AddMusicView(SuccessMessageMixin, CreateView):
+class AddMusicView(LoginRequiredMixin, CreateView):
     template_name = 'app/add_music.html'
     form_class = AddMusicForm
     success_url = reverse_lazy('app:player')
@@ -47,7 +45,7 @@ class AddMusicView(SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class MusicListView(ListView):
+class MusicListView(LoginRequiredMixin, ListView):
     model = Music
     template_name = 'app/player.html'
     context_object_name = 'element_list'

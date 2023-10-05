@@ -1,9 +1,8 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, CreateView
 
 from .forms import UserRegisterForm
@@ -34,9 +33,8 @@ class UserRegisterView(SuccessMessageMixin, CreateView):
     success_message = "Your profile was created successfully, now you can login!"
 
 
-@method_decorator(login_required, name='dispatch')
-class UserProfileView(DetailView):
+class UserProfileView(LoginRequiredMixin, DetailView):
     template_name = 'users/profile.html'
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         return self.request.user
