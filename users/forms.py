@@ -4,22 +4,25 @@ from django.contrib.auth.forms import UserCreationForm
 
 
 class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField()
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class':'form-input','placeholder':'Email'})
+    )
 
     username = forms.CharField(
-        help_text=''
+        help_text='',
+        widget=forms.TextInput(attrs={'class':'form-input','placeholder':'Username'})
     )
 
     password1 = forms.CharField(
         label='Password',
         help_text='',
-        widget=forms.PasswordInput()
+        widget=forms.PasswordInput(attrs={'class':'form-input','placeholder':'Password'})
     )
 
     password2 = forms.CharField(
         label='Confirm password',
         help_text='',
-        widget=forms.PasswordInput()
+        widget=forms.PasswordInput(attrs={'class':'form-input','placeholder':'Re-type password'})
     )
 
     def clean_email(self):
