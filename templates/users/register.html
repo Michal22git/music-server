@@ -1,12 +1,23 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<form method="POST">
+<form method="POST" class="authentication-form">
     {% csrf_token %}
     <legend>Create an account!</legend>
-    {{ form|crispy }}
+    <div class="form-input-container ">
+        {{form.username}}
+    </div>
+    <div class="form-input-container ">
+        {{form.email}}
+    </div>
+    <div class="form-input-container ">
+        {{form.password1}}
+    </div>
+    <div class="form-input-container ">
+        {{form.password2}}
+    </div>
     <div>
-        <button type="submit">Sign Up</button>
+        <button type="submit" class="submit-button">Sign Up</button>
     </div>
 </form>
 {% endblock %}
