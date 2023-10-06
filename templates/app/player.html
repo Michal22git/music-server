@@ -1,18 +1,46 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-<h2>Twoje piosenki</h2>
 <ul>
-    {% for element in element_list %}
-    <li>
-        {{ element.title }}
-        <form method="POST" action="{% url 'app:delete' element.id %}">
-           {% csrf_token %}<input type="submit" value="Delete">
-        </form>
-        <audio controls muted>
-            <source src="{{ element.mp3_file.url }}" type="audio/mpeg">
-            Twoja przeglądarka nie obsługuje odtwarzacza audio.
-        </audio>
-    </li>
-    {% endfor %}
+    <div class="scroll-to-top" id="scrollToTopBtn">
+        <span>&uarr;</span>
+    </div>
+
+    {% if element_list %}
+        <div class="playlist-header">
+            <h2>Your playlist!</h2>
+            <p>Playlist count: {{ element_count }}</p>
+            <p>Total time: {{ total_time }}</p>
+        </div>
+        {% for element in element_list %}
+        <li class="element-li">
+            <div class="element-img">
+                <img src="/media/images/logo.png" alt="music-logo" width="90px" height="90px">
+            </div>
+
+            <h1 class="element-header">
+                {{ element.title }}
+            </h1>
+
+            <p class="element-time">
+                {{ element.time}}
+            </p>
+
+            <form method="POST" action="{% url 'app:delete' element.id %}">
+               {% csrf_token %}<input type="submit" value="Delete" class="element-delete">
+            </form>
+
+            <audio controls muted class="element-audio">
+                <source src="{{ element.mp3_file.url }}" type="audio/mpeg">
+                Your browser doesnt support audio.
+            </audio>
+        </li>
+        {% endfor %}
+    {% else %}
+        <div class="empty-playlist">
+            <p>Your playlist is empty, <a href="{% url 'app:addmusic' %}">add</a> music and start listening!</p>
+        </div>
+    {% endif %}
 </ul>
+<script src="{% static 'js/scroll.js' %}"></script>
 {% endblock content %}

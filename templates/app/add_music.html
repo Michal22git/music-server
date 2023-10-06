@@ -1,12 +1,17 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<form method="post" enctype="multipart/form-data">
+<style type="">
+    input[type='file'] {
+       color: transparent;
+    }
+</style>
+<form class="addmusic" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <legend>Add music!</legend>
-    {{ form|crispy }}
+    <legend>Add your music!</legend>
+        {{ form|crispy }}
     <div>
-        <button type="submit">Add</button>
+        <button type="submit" class="submit-button">Add</button>
     </div>
 </form>
 {% endblock content %}

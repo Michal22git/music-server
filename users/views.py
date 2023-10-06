@@ -3,9 +3,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, CreateView
+from django.views.generic import DetailView, CreateView, UpdateView
 
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, UserUpdateProfileForm
 
 
 class CustomLoginView(SuccessMessageMixin, LoginView):
@@ -39,8 +39,10 @@ class UserRegisterView(SuccessMessageMixin, CreateView):
     success_message = "Your profile was created successfully, now you can login!"
 
 
-class UserProfileView(LoginRequiredMixin, DetailView):
+class UserProfileView(LoginRequiredMixin, DetailView, UpdateView):
     template_name = 'users/profile.html'
+    form_class = UserUpdateProfileForm
+    success_url = reverse_lazy('app:home')
 
     def get_object(self, queryset=None):
         return self.request.user

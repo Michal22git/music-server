@@ -5,7 +5,7 @@ from .validators import validate_mp3_file
 
 class AddMusicForm(forms.ModelForm):
     mp3_file = forms.FileField(
-        label='Add MP3 file',
+        label='',
         validators=[validate_mp3_file]
     )
 

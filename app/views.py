@@ -1,7 +1,6 @@
 import os
 import eyed3
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -19,7 +18,6 @@ class AddMusicView(LoginRequiredMixin, CreateView):
     template_name = 'app/add_music.html'
     form_class = AddMusicForm
     success_url = reverse_lazy('app:player')
-    success_message = "Music has been added successfully!"
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
@@ -49,10 +47,26 @@ class MusicListView(LoginRequiredMixin, ListView):
     model = Music
     template_name = 'app/player.html'
     context_object_name = 'element_list'
-    queryset = Music.objects.all()
 
     def get_queryset(self):
-        return Music.objects.filter(owner=self.request.user)
+        queryset = Music.objects.filter(owner=self.request.user).order_by('-id')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        total_seconds = sum(
+            (int(music.time.split(':')[0]) * 60 + int(music.time.split(':')[1]))
+            for music in context['element_list']
+        )
+
+        total_time_minutes = total_seconds // 60
+        total_time_seconds = total_seconds % 60
+
+        context['total_time'] = f'{total_time_minutes}:{total_time_seconds:02d}'
+        context['element_count'] = self.get_queryset().count()
+
+        return context
 
 
 class MusicDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -77,6 +91,5 @@ class MusicDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             os.remove(file_path)
 
         music.delete()
-        messages.success(self.request, 'Music and file have been deleted.')
 
         return redirect(self.success_url)
