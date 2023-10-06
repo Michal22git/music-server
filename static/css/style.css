@@ -24,7 +24,8 @@ header {
     height: 120px;
     background-color: #404258;
 }
-.message-display{
+
+.message-display {
     width: 1000px;
     height: 60px;
     margin: 10px auto;
@@ -35,6 +36,7 @@ header {
     border: 1px solid #f5f5f5;
     background-color: #f5f5f56f;
 }
+
 .menu {
     width: 1400px;
     height: 120px;
@@ -125,7 +127,7 @@ header {
     flex-direction: column;
 }
 
-.authentication-form > legend,
+.authentication-form>legend,
 .addmusic legend {
     font-size: 30px;
     margin-bottom: 30px;
@@ -239,7 +241,7 @@ li.element-li {
     font-size: 20px;
     border-radius: 5px;
     transition: 0.3s ease-in-out;
-    margin-top: 10%;
+    margin: 20px;
     background-color: #404258;
 }
 
@@ -251,6 +253,8 @@ li.element-li {
 .element-audio {
     flex: 1;
     margin-left: 10px;
+    background-color: blue;
+    display: none;
 }
 
 .element-list {
@@ -264,7 +268,7 @@ li.element-li {
 .scroll-to-top {
     display: none;
     position: fixed;
-    bottom: 20px;
+    bottom: 120px;
     right: 20px;
     background-color: #404258;
     color: #fff;
@@ -276,4 +280,89 @@ li.element-li {
 
 .scroll-to-top:hover {
     opacity: 0.7;
+}
+
+.music-list {
+    min-height: 100vh;
+    margin-bottom: 10rem;
+}
+.play-button{
+    all: unset;
+    cursor: pointer;
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid #50577A;
+    color: #50577A;
+    font-size: 20px;
+    border-radius: 5px;
+    transition: 0.3s ease-in-out;
+    margin: 20px;
+    background-color: #404258;
+}
+.play-button:hover{
+    background: #329e29;
+}
+
+.player-dashboard {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    margin-top: 100px;
+    opacity:0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    transition: 0.3s ease-in-out;
+}
+.player-dashboard > p {
+    color: white;
+}
+.custom-audio-player {
+    position: relative;
+}
+.player-dashboard-title{
+    font-size:19px;
+    width: 125px;
+    height: fit-content;
+}
+
+.progress-bar {
+    width: 50%;
+    height: 10px;
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.progress {
+    height: 100%;
+    background-color: #007bff;
+    width: 0%;
+    display: block;
+}
+.player-dashboard > button{
+    all: unset;
+    cursor: pointer;
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid #50577A;
+    color: #50577A;
+    font-size: 20px;
+    border-radius: 5px;
+    transition: 0.3s ease-in-out;
+    margin: 20px;
+    background-color: #404258;
+}
+.play-button-dashboard:hover{
+    background: #329e29;
+}
+.stop-button-dashboard:hover{
+    background: #e1c407;
 }
