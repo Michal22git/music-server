@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<form class="addmusic" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <legend>Create playlist:</legend>
+        {{ form|crispy }}
+    <div>
+        <button type="submit" class="submit-button">Add</button>
+    </div>
+</form>
+{% endblock content %}

@@ -366,3 +366,58 @@ li.element-li {
 .stop-button-dashboard:hover{
     background: #e1c407;
 }
+
+
+.presentation {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 90%;
+	margin: auto;
+	min-height: 90vh;
+}
+
+.intro-text {
+	width: 100%;
+	text-align: center;
+	padding: 2%;
+	border-radius: 5px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	background-color: #474E68;
+}
+
+
+.intro-text p {
+	margin-top: 5px;
+	font-size: 22px;
+	color: white;
+}
+
+.cta {
+	width: 100%;
+	padding: 50px 0px;
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+.section {
+	flex: 1;
+	text-align: center;
+	padding: 20px;
+	margin: 10px;
+	border-radius: 5px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	background-color: #474E68;
+	color: white;
+}
+
+.section h1 {
+    color: white;
+}
+
+.section p {
+    color: white;
+}
+

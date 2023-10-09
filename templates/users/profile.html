@@ -3,18 +3,29 @@
 <div class="empty-playlist">
     <img src="/media/images/default.png" alt="profile-picture">
     <h2>User Profile</h2>
-    <p><strong>Username:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
     <p><strong>Date Joined:</strong> {{ user.date_joined|date:"d F Y" }}</p>
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+
         <div class="form-input-container">
+            <p>Username:</p><br>
             {{ form.username }}
         </div>
+
         <div class="form-input-container">
+            <p>Email:</p><br>
             {{ form.email }}
         </div>
+
+        {% if form.non_field_errors %}
+            <ul class="errorlist">
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         <div>
             <button type="submit" class="submit-button">Update</button>
         </div>

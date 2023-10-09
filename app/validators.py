@@ -8,7 +8,7 @@ def validate_mp3_file(value):
 
     try:
         audio = MP3(value)
-        if audio.info.length > 600:
-            raise ValidationError('File can not be longer than 10 minutes.')
+        if audio.info.length > 900:
+            raise ValidationError('File can not be longer than 15 minutes.')
     except Exception as e:
         raise ValidationError(f'Invalid mp3 file - {e}')

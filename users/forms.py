@@ -37,13 +37,22 @@ class UserRegisterForm(UserCreationForm):
 
 
 class UserUpdateProfileForm(forms.ModelForm):
-    email = forms.EmailField()
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError('This email address is already in use.')
-        return email
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        email = cleaned_data.get('email')
+
+        if User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
+            raise forms.ValidationError('This username is already taken')
+
+        if User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
+            raise forms.ValidationError('This email address is already taken')
+
+        if username == self.instance.username and email == self.instance.email:
+            raise forms.ValidationError('You did not make any changes')
+
+        return cleaned_data
 
     class Meta:
         model = User

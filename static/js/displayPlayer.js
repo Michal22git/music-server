@@ -4,7 +4,7 @@ const playerDashboardTimer = document.querySelector('.player-dashboard-timer');
 const progressBar = document.querySelector('.progress');
 const progressBarContainer = document.querySelector('.progress-bar');
 let audio = null;
-let click = false;
+let isPaused = true;
 
 function formatTime(timeInSeconds) {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -24,43 +24,47 @@ function updateProgressBar() {
     playerDashboardTimer.textContent = `${currentTimeFormatted}/${formatTime(audio.duration)}`;
 }
 
-function handlePlayButtonClick(element) {
-    const songTitle = element.getAttribute('data-title');
-    const songTime = element.getAttribute('data-time');
-    const songUrl = element.getAttribute('name');
-
-    if (audio) {
-        audio.pause();
-    }
-
-    audio = new Audio(songUrl);
-
-    audio.addEventListener('timeupdate', updateProgressBar);
-    audio.addEventListener('ended', () => {
-        playerDashboard.style.opacity = 0;
-        progressBar.style.width = '0%';
-        playerDashboardTimer.textContent = '0:00/0:00';
-        audio = null;
-    });
-
-    changeDashboardData(songTime, songTitle);
-    playerDashboard.style.opacity = 1;
-    audio.play();
-}
-
 document.querySelectorAll('.play-button').forEach((playButton) => {
     playButton.addEventListener('click', () => {
-        handlePlayButtonClick(playButton);
+        const songTitle = playButton.getAttribute('data-title');
+        const songTime = playButton.getAttribute('data-time');
+        const songUrl = playButton.getAttribute('name');
+
+        if (audio) {
+            audio.pause();
+        }
+
+        audio = new Audio(songUrl);
+
+        audio.addEventListener('timeupdate', updateProgressBar);
+        audio.addEventListener('ended', () => {
+            playerDashboard.style.opacity = 0;
+            progressBar.style.width = '0%';
+            playerDashboardTimer.textContent = '0:00/0:00';
+            audio = null;
+            isPaused = true;
+            document.querySelector('.play-stop-button').textContent = 'Play';
+        });
+
+        changeDashboardData(songTime, songTitle);
+        playerDashboard.style.opacity = 1;
+        audio.play();
+        isPaused = false;
+        document.querySelector('.play-stop-button').textContent = 'Pause';
     });
 });
 
-document.querySelector('.stop-button-dashboard').addEventListener('click', () => {
+document.querySelector('.play-stop-button').addEventListener('click', () => {
     if (audio) {
-        audio.pause();
-        audio = null;
-        playerDashboard.style.opacity = 0;
-        progressBar.style.width = '0%';
-        playerDashboardTimer.textContent = '0:00/0:00';
+        if (isPaused) {
+            audio.play();
+            isPaused = false;
+            document.querySelector('.play-stop-button').textContent = 'Pause';
+        } else {
+            audio.pause();
+            isPaused = true;
+            document.querySelector('.play-stop-button').textContent = 'Play';
+        }
     }
 });
 
@@ -71,11 +75,6 @@ progressBarContainer.addEventListener('click', (event) => {
         const percentage = (offsetX / rect.width) * 100;
         const newAudioTime = (percentage / 100) * audio.duration;
         audio.currentTime = newAudioTime;
-        console.log(rect)
-        console.log(offsetX)
-        console.log(percentage)
-        console.log(newAudioTime)
-        click = true;
         updateProgressBar();
     }
 });
