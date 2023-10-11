@@ -191,16 +191,22 @@ header {
     background-color: #50577A;
 }
 
-.playlist-header {
-    width: 700px;
+.playlist-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15%, 1fr));
+    grid-gap: 10px;
     margin: 50px auto;
-    padding: 2% 2%;
+    max-width: 100%;
+    margin-left:5%;
+    margin-right: 5%;
+}
+
+.playlist-header {
+    padding: 1% 1%;
     background-color: #474E68;
     border-radius: 10px;
-    display: flex;
-    justify-content: center;
     align-items: center;
-    flex-direction: column;
+    text-align: center;
 }
 
 li.element-li {

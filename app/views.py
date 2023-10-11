@@ -1,5 +1,5 @@
 import os
-
+from datetime import datetime, timedelta
 import eyed3
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -32,15 +32,17 @@ class AddMusicView(LoginRequiredMixin, CreateView):
         mp3_file = form.cleaned_data['mp3_file']
         playlist_id = form.cleaned_data['playlist'].id
 
-        playlist, created = Playlist.objects.get_or_create(id=playlist_id, owner=self.request.user)
+        playlist = get_object_or_404(Playlist, id=playlist_id, owner=self.request.user)
         form.instance.playlist = playlist
+        form.save()
+        playlist.songs.add(form.instance)
 
-        # save and get mp3 file data - time and title
         filename = mp3_file.name
         file_path = os.path.join(settings.MEDIA_ROOT, 'musics', filename)
         with open(file_path, 'wb') as destination:
             for chunk in mp3_file.chunks():
                 destination.write(chunk)
+
         audiofile = eyed3.load(file_path)
         form.instance.title = os.path.splitext(filename)[0] or "Unknown Title"
         time_in_seconds = int(audiofile.info.time_secs)
@@ -52,38 +54,42 @@ class AddMusicView(LoginRequiredMixin, CreateView):
 
 
 class MusicListView(LoginRequiredMixin, ListView):
-    model = Music
     template_name = 'app/player.html'
-    context_object_name = 'element_list'
-
-    def get_queryset(self):
-        queryset = Music.objects.filter(owner=self.request.user).order_by('-id')
-        return queryset
+    model = Music
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        total_seconds = sum(
-            (int(music.time.split(':')[0]) * 60 + int(music.time.split(':')[1]))
-            for music in context['element_list']
-        )
+        playlists = Playlist.objects.filter(owner=self.request.user)
+        playlist_info = []
 
-        total_time_minutes = total_seconds // 60
-        total_time_seconds = total_seconds % 60
+        for playlist in playlists:
+            songs = playlist.songs.all()
+            total_seconds = sum(
+                int(song.time.split(':')[0]) * 60 + int(song.time.split(':')[1])
+                for song in songs
+            )
+            total_time = str(timedelta(seconds=total_seconds))
 
-        context['total_time'] = f'{total_time_minutes}:{total_time_seconds:02d}'
-        context['element_count'] = self.get_queryset().count()
+            playlist_info.append({
+                'playlist_name': playlist.title,
+                'count': songs.count(),
+                'time': total_time,
+            })
 
         playlist_id = self.kwargs.get('pk')
         playlist = get_object_or_404(Playlist, pk=playlist_id, owner=self.request.user)
+
         context['selected_playlist'] = playlist
+        context['playlists'] = playlist_info
+        context['element_list'] = playlist.songs.all()
 
         return context
 
 
 class MusicDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Music
-    success_url = reverse_lazy('app:player')
+    success_url = reverse_lazy('app:home')
     template_name = None
 
     def test_func(self):

@@ -6,66 +6,61 @@
         <span>&uarr;</span>
     </div>
 
-    <div class="playlist-list">
-        <ul>
-            {% for playlist in playlists %}
-                <li>
-                    <p>{{ playlist.title }}</p>
-                </li>
-            {% endfor %}
-        </ul>
+    <div class="playlist-container">
+        {% for playlist in playlists %}
+            <div class="playlist-header">
+                <h2>{{ playlist.playlist_name }}</h2>
+                <p>Playlist count: {{ playlist.count }}</p>
+                <p>Total time: {{ playlist.time }}</p>
+            </div>
+        {% endfor %}
     </div>
+
+    {% for element in element_list %}
+        <li class="element-li">
+            <div class="element-img">
+                <img src="/media/images/logo.png" alt="music-logo" width="90px" height="90px">
+            </div>
+
+            <h1 class="element-header">
+                {{ element.title }}
+            </h1>
+
+            <p class="element-time">
+                {{ element.time}}
+            </p>
+
+            <form method="POST" action="{% url 'app:delete' element.id %}">
+                {% csrf_token %}<input type="submit" value="Delete" class="element-delete">
+            </form>
+
+            <audio controls muted class="element-audio">
+                <source src="{{ element.mp3_file.url }}" type="audio/mpeg">
+                Your browser doesn't support audio.
+            </audio>
+
+            <button class="play-button" type="button" name="{{ element.mp3_file.url }}" data-title="{{ element.title }}"
+                data-time="{{ element.time }}">Play</button>
+        </li>
+    {% endfor %}
 
     {% if element_list %}
-    <div class="playlist-header">
-        <h2>Your playlist!</h2>
-        <p>Playlist count: {{ element_count }}</p>
-        <p>Total time: {{ total_time }}</p>
-    </div>
-    {% for element in element_list %}
-    <li class="element-li">
-        <div class="element-img">
-            <img src="/media/images/logo.png" alt="music-logo" width="90px" height="90px">
+        <div class="player-dashboard">
+            <p class="player-dashboard-title">title</p>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+            <p class="player-dashboard-timer">x/timer</p>
+            <button class="play-stop-button">Play</button>
         </div>
-
-        <h1 class="element-header">
-            {{ element.title }}
-        </h1>
-
-        <p class="element-time">
-            {{ element.time}}
-        </p>
-
-        <form method="POST" action="{% url 'app:delete' element.id %}">
-            {% csrf_token %}<input type="submit" value="Delete" class="element-delete">
-        </form>
-
-        <audio controls muted class="element-audio">
-            <source src="{{ element.mp3_file.url }}" type="audio/mpeg">
-            Your browser doesnt support audio.
-        </audio>
-
-        <button class="play-button" type="button" name="{{ element.mp3_file.url }}" data-title="{{ element.title }}"
-            data-time="{{ element.time }}">Play</button>
-    </li>
-    {% endfor %}
     {% else %}
-    <div class="empty-playlist">
-        <p>Your playlist is empty, <a href="{% url 'app:addmusic' %}">add</a> music and start listening!</p>
-    </div>
+        <div class="empty-playlist">
+            <p>Your playlist is empty, <a href="{% url 'app:addmusic' %}">add</a> music and start listening!</p>
+        </div>
     {% endif %}
 </ul>
-<div class="player-dashboard">
-    <p class="player-dashboard-title">title</p>
-    <div class="progress-bar">
-        <div class="progress"></div>
-    </div>
-    <p class="player-dashboard-timer">x/timer</p>
-    <button class="play-stop-button">Play</button>
-</div>
 
 <script src="{% static 'js/scroll.js' %}"></script>
 <script src="{% static 'js/displayPlayer.js' %}"></script>
-
 
 {% endblock content %}
