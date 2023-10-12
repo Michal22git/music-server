@@ -8,11 +8,17 @@
 
     <div class="playlist-container">
         {% for playlist in playlists %}
-            <div class="playlist-header">
-                <h2>{{ playlist.playlist_name }}</h2>
-                <p>Playlist count: {{ playlist.count }}</p>
-                <p>Total time: {{ playlist.time }}</p>
-            </div>
+            <a href="{% url 'app:player' playlist.id %}" class="no-link-decoration">
+                <div class="playlist-header">
+                    <h2>{{ playlist.playlist_name }}</h2>
+                    <p>Playlist count: {{ playlist.count }}</p>
+                    <p>Total time: {{ playlist.time }}</p>
+
+                    <form method="POST" action="#">
+                    {% csrf_token %}<input type="submit" value="Delete playlist" class="element-delete"><p></p>
+                </form>
+                </div>
+            </a>
         {% endfor %}
     </div>
 

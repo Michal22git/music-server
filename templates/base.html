@@ -6,6 +6,7 @@
     <title>Music streamer</title>
 
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="media/images/bar_logo.png">
 </head>
 <body>
     <header>
@@ -15,7 +16,6 @@
                 {% if user.is_authenticated %}
                     <li class="menu-link"><a href="{% url 'app:createplaylist' %}">Create playlist</a></li>
                     <li class="menu-link"><a href="{% url 'app:addmusic' %}">Add music</a></li>
-
                     <li class="menu-link"><a href="{% url 'users:profile' %}">My profile</a></li>
                     <li class="menu-link auth-button"><a href="{% url 'users:logout' %}">Logout</a></li>
                 {% else %}

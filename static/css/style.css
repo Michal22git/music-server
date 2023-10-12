@@ -207,6 +207,17 @@ header {
     border-radius: 10px;
     align-items: center;
     text-align: center;
+    color: black;
+    border: 1px solid transparent;
+}
+
+.playlist-header:hover {
+    border: 1px solid #282F45;
+    background-color: #585F79;
+}
+
+.no-link-decoration {
+    text-decoration: none;
 }
 
 li.element-li {

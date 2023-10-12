@@ -1,5 +1,6 @@
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
+
 import eyed3
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -69,18 +70,17 @@ class MusicListView(LoginRequiredMixin, ListView):
                 int(song.time.split(':')[0]) * 60 + int(song.time.split(':')[1])
                 for song in songs
             )
-            total_time = str(timedelta(seconds=total_seconds))
 
             playlist_info.append({
+                'id': playlist.id,
                 'playlist_name': playlist.title,
                 'count': songs.count(),
-                'time': total_time,
+                'time': str(timedelta(seconds=total_seconds)),
             })
 
         playlist_id = self.kwargs.get('pk')
         playlist = get_object_or_404(Playlist, pk=playlist_id, owner=self.request.user)
 
-        context['selected_playlist'] = playlist
         context['playlists'] = playlist_info
         context['element_list'] = playlist.songs.all()
 
