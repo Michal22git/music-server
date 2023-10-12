@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
-
+from typing import Any
+from django.db.models.query import QuerySet
 import eyed3
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -8,10 +9,22 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView
-
 from .forms import AddMusicForm, PlaylistForm
 from .models import Music, Playlist
 
+from django.views import View
+from django.shortcuts import render
+
+
+class PlaylistListView(LoginRequiredMixin, ListView):
+    model = Playlist
+    template_name = 'app/playlists.html'
+
+    def get_queryset(self):
+        return Playlist.objects.filter(owner=self.request.user)
+
+
+        
 
 class HomeView(TemplateView):
     template_name = 'app/home.html'
