@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="playlist-container">
+    {% for playlist in object_list %}
+    <a href="{% url 'app:player' playlist.id %}" class="no-link-decoration">
+        <div class="playlist-header">
+            <h2>{{ playlist.title }}</h2>
+            <p>Playlist count: {{ playlist.get_songs_count }}</p>
+            <p>Total time: {{ playlist.get_sum_time }}</p>
+
+            <form method="POST" action="#">
+                {% csrf_token %}<input type="submit" value="Delete playlist" class="element-delete">
+                <p></p>
+            </form>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock content %}
