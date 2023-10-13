@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-
+from django.views import View
 import eyed3
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -33,7 +33,8 @@ class AddMusicView(LoginRequiredMixin, CreateView):
         mp3_file = form.cleaned_data['mp3_file']
         playlist_id = form.cleaned_data['playlist'].id
 
-        playlist = get_object_or_404(Playlist, id=playlist_id, owner=self.request.user)
+        playlist = get_object_or_404(
+            Playlist, id=playlist_id, owner=self.request.user)
         form.instance.playlist = playlist
         form.save()
         playlist.songs.add(form.instance)
@@ -48,7 +49,8 @@ class AddMusicView(LoginRequiredMixin, CreateView):
         form.instance.title = os.path.splitext(filename)[0] or "Unknown Title"
         time_in_seconds = int(audiofile.info.time_secs)
         minutes, seconds = divmod(time_in_seconds, 60)
-        form.instance.time = f"{minutes}:{seconds:02d}" if time_in_seconds else 'N/A'
+        form.instance.time = f"{minutes}: {
+            seconds: 02d}" if time_in_seconds else 'N/A'
         form.instance.mp3_file = os.path.join('musics', filename)
 
         return super().form_valid(form)
@@ -122,26 +124,38 @@ class CreatePlaylistView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class DeletePlaylistView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Playlist
-    success_url = reverse_lazy('app:playlist_list')
-    template_name = None
+# class DeletePlaylistView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+#     model = Playlist
+#     success_url = reverse_lazy('app:playlist_list')
+#     template_name = None
 
-    def test_func(self):
-        playlist = self.get_object()
-        if self.request.user == playlist.owner:
-            return True
-        return False
+#     def test_func(self):
+#         playlist = self.get_object()
+#         if self.request.user == playlist.owner:
+#             return True
+#         return False
 
-    def delete(self, request, *args, **kwargs):
-        playlist = self.get_object()
-        if self.request.user == playlist.owner:
-            songs = playlist.songs.all()
-            for song in songs:
-                file_path = os.path.join(settings.MEDIA_ROOT, str(song.mp3_file))
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-                song.delete()
+#     def delete(self, request, *args, **kwargs):
+#         playlist = self.get_object()
+#         if self.request.user == playlist.owner:
+#             songs = playlist.songs.all()
+#             for song in songs:
+#                 file_path = os.path.join(settings.MEDIA_ROOT, str(song.mp3_file))
+#                 if os.path.exists(file_path):
+#                     os.remove(file_path)
+#                 song.delete()
 
-            playlist.delete()
-            return redirect(self.success_url)
+#             playlist.delete()
+#             return redirect(self.success_url)
+
+class DeletePlaylistView(View):
+    def post(self, request, pk):
+        playlist = Playlist.objects.get(id=pk)
+        songs = playlist.songs.all()
+        for song in songs:
+            file_path = os.path.join(settings.MEDIA_ROOT, str(song.mp3_file))
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            song.delete()
+        playlist.delete()
+        return redirect('app:playlist_list')
