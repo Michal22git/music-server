@@ -1,7 +1,6 @@
 import os
 from datetime import timedelta
-from typing import Any
-from django.db.models.query import QuerySet
+
 import eyed3
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -9,22 +8,10 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView
+
 from .forms import AddMusicForm, PlaylistForm
 from .models import Music, Playlist
 
-from django.views import View
-from django.shortcuts import render
-
-
-class PlaylistListView(LoginRequiredMixin, ListView):
-    model = Playlist
-    template_name = 'app/playlists.html'
-
-    def get_queryset(self):
-        return Playlist.objects.filter(owner=self.request.user)
-
-
-        
 
 class HomeView(TemplateView):
     template_name = 'app/home.html'
@@ -34,7 +21,7 @@ class AddMusicView(LoginRequiredMixin, CreateView):
     model = Music
     template_name = 'app/add_music.html'
     form_class = AddMusicForm
-    success_url = reverse_lazy('app:home')
+    success_url = reverse_lazy('app:playlist_list')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -69,40 +56,30 @@ class AddMusicView(LoginRequiredMixin, CreateView):
 
 class MusicListView(LoginRequiredMixin, ListView):
     template_name = 'app/player.html'
-    model = Music
+    model = Playlist
+
+    def get_queryset(self):
+        return Playlist.objects.filter(owner=self.request.user).prefetch_related('songs')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        playlists = Playlist.objects.filter(owner=self.request.user)
-        playlist_info = []
+        playlists = context['playlist_list']
 
-        for playlist in playlists:
-            songs = playlist.songs.all()
-            total_seconds = sum(
-                int(song.time.split(':')[0]) * 60 + int(song.time.split(':')[1])
-                for song in songs
-            )
-
-            playlist_info.append({
-                'id': playlist.id,
-                'playlist_name': playlist.title,
-                'count': songs.count(),
-                'time': str(timedelta(seconds=total_seconds)),
-            })
-
-        playlist_id = self.kwargs.get('pk')
-        playlist = get_object_or_404(Playlist, pk=playlist_id, owner=self.request.user)
-
-        context['playlists'] = playlist_info
-        context['element_list'] = playlist.songs.all()
+        context['element_list'] = [
+            {
+                'playlist': playlist,
+                'songs': playlist.songs.all()
+            }
+            for playlist in playlists
+        ]
 
         return context
 
 
 class MusicDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Music
-    success_url = reverse_lazy('app:home')
+    success_url = reverse_lazy('app:playlist_list')
     template_name = None
 
     def test_func(self):
@@ -126,6 +103,14 @@ class MusicDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return redirect(self.success_url)
 
 
+class PlaylistListView(LoginRequiredMixin, ListView):
+    model = Playlist
+    template_name = 'app/playlists.html'
+
+    def get_queryset(self):
+        return Playlist.objects.filter(owner=self.request.user)
+
+
 class CreatePlaylistView(LoginRequiredMixin, CreateView):
     model = Playlist
     template_name = 'app/create_playlist.html'
@@ -135,3 +120,28 @@ class CreatePlaylistView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.owner = self.request.user
         return super().form_valid(form)
+
+
+class DeletePlaylistView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Playlist
+    success_url = reverse_lazy('app:playlist_list')
+    template_name = None
+
+    def test_func(self):
+        playlist = self.get_object()
+        if self.request.user == playlist.owner:
+            return True
+        return False
+
+    def delete(self, request, *args, **kwargs):
+        playlist = self.get_object()
+        if self.request.user == playlist.owner:
+            songs = playlist.songs.all()
+            for song in songs:
+                file_path = os.path.join(settings.MEDIA_ROOT, str(song.mp3_file))
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                song.delete()
+
+            playlist.delete()
+            return redirect(self.success_url)
